@@ -100,7 +100,7 @@ EndOfHelp
 }
 
 function install_crowdsecurity() {
-    sudo apt-get install bash gettext whiptail curl wget
+    sudo yum install bash gettext whiptail curl wget
     cd /tmp || return
     if [ ! -d crowdsec-release.tgz ]; then
         curl -s https://api.github.com/repos/crowdsecurity/crowdsec/releases/latest | grep browser_download_url| cut -d '"' -f 4  | wget -i -
@@ -134,14 +134,14 @@ function install_docker() {
 function install_jemalloc() {
 
     # https://zapier.com/engineering/celery-python-jemalloc/
-    if ! $(dpkg -l "libjemalloc*" | grep -q "ii  libjemalloc"); then
+    if ! $(yum list installed "libjemalloc*" | grep -q "ii  libjemalloc"); then
         apt install -f checkinstall curl build-essential jq autoconf libjemalloc-dev -y
     fi
 }
 
 function install_modsecurity() {
     # Tested on nginx 1.(16|18).X Based on https://www.nginx.com/blog/compiling-and-installing-modsecurity-for-open-source-nginx/ with fixes
-    apt-get install -y apt-utils autoconf automake build-essential git libcurl4-openssl-dev libgeoip-dev liblmdb-dev libpcre++-dev libtool libxml2-dev libyajl-dev pkgconf wget zlib1g-dev
+    yum install -y apt-utils autoconf automake build-essential git libcurl4-openssl-dev libgeoip-dev liblmdb-dev libpcre++-dev libtool libxml2-dev libyajl-dev pkgconf wget zlib1g-dev
     git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity
     cd ModSecurity || return
     git submodule init
@@ -556,7 +556,7 @@ function install_suricata() {
 
 function install_yara() {
     echo '[+] Checking for old YARA version to uninstall'
-    dpkg -l|grep "yara-v[0-9]\{1,2\}\.[0-9]\{1,2\}\.[0-9]\{1,2\}"|cut -d " " -f 3|sudo xargs dpkg --purge --force-all 2>/dev/null
+    yum list installed|grep "yara-v[0-9]\{1,2\}\.[0-9]\{1,2\}\.[0-9]\{1,2\}"|cut -d " " -f 3|sudo xargs dpkg --purge --force-all 2>/dev/null
 
     echo '[+] Installing Yara'
 
@@ -812,7 +812,7 @@ EOF
 }
 
 function install_clamav() {
-    apt-get install clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs -y
+    yum install clamav clamav-daemon clamav-freshclam clamav-unofficial-sigs -y
     pip3 install -U pyclamd
 
     cat >> /usr/share/clamav-unofficial-sigs/conf.d/00-clamav-unofficial-sigs.conf << EOF
@@ -1225,7 +1225,7 @@ function install_prometheus_grafana() {
     wget https://github.com/prometheus/prometheus/releases/download/v"$prometheus_version"/prometheus-"$prometheus_version".linux-amd64.tar.gz && tar xf prometheus-"$prometheus_version".linux-amd64.tar.gz
     cd prometheus-$prometheus_version.linux-amd6 && ./prometheus --config.file=prometheus.yml &
 
-    sudo apt-get install -y adduser libfontconfig1
+    sudo yum install -y adduser libfontconfig1
     wget https://dl.grafana.com/oss/release/grafana_"$grafana_version"_amd64.deb
     sudo dpkg -i grafana_"$grafana_version"_amd64.deb
 
