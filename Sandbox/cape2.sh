@@ -36,10 +36,10 @@ cat << EOI
 Problems with PyOpenSSL?
     sudo rm -rf /usr/local/lib/python3.8/dist-packages/OpenSSL/
     sudo rm -rf /home/${USER}/.local/lib/python3.8/site-packages/OpenSSL/
-    sudo apt install --reinstall python-openssl
+    sudo yum reinstall python-openssl
 
 Problem with PIP?
-    sudo python -m pip3 uninstall pip3 && sudo apt install python3-pip --reinstall
+    sudo python -m pip3 uninstall pip3 && sudo yum reinstall python3-pip
 
 Problem with pillow:
     * ValueError: jpeg is required unless explicitly disabled using --disable-jpeg, aborting
@@ -47,7 +47,7 @@ Problem with pillow:
 Solution:
     # https://askubuntu.com/a/1094768
     # you may need to adjust version of libjpeg-turbo8
-    sudo apt install zlib1g-dev libjpeg-turbo8-dev libjpeg-turbo8=1.5.2-0ubuntu5
+    sudo yum install zlib1g-dev libjpeg-turbo8-dev libjpeg-turbo8=1.5.2-0ubuntu5
 EOI
 }
 
@@ -123,11 +123,11 @@ function install_crowdsecurity() {
 
 function install_docker() {
     # https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04
-    sudo apt install apt-transport-https ca-certificates curl software-properties-common
+    sudo yum install apt-transport-https ca-certificates curl software-properties-common
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-    sudo apt update
-    sudo apt install docker-ce
+    sudo yum makecache
+    sudo yum install docker-ce
     sudo usermod -aG docker ${USER}
 }
 
@@ -135,7 +135,7 @@ function install_jemalloc() {
 
     # https://zapier.com/engineering/celery-python-jemalloc/
     if ! $(yum list installed "libjemalloc*" | grep -q "ii  libjemalloc"); then
-        apt install -f checkinstall curl build-essential jq autoconf libjemalloc-dev -y
+        yum install -f checkinstall curl build-essential jq autoconf libjemalloc-dev -y
     fi
 }
 
@@ -205,7 +205,7 @@ function install_nginx() {
     wget https://www.openssl.org/source/openssl-1.1.0h.tar.gz && tar xzvf openssl-1.1.0h.tar.gz
 
     sudo add-apt-repository -y ppa:maxmind/ppa
-    sudo apt update && sudo apt upgrade -y
+    sudo yum makecache && sudo yum upgrade
     sudo apt install -y perl libperl-dev libgd3 libgd-dev libgeoip1 libgeoip-dev geoip-bin libxml2 libxml2-dev libxslt1.1 libxslt1-dev
 
     cd nginx-$nginx_version || return
@@ -600,7 +600,7 @@ function install_mongo(){
     wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
     echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb.list
 
-    apt update 2>/dev/null
+    yum makecache 2>/dev/null
     apt install libpcre3-dev numactl -y
     apt install -y mongodb-org
     pip3 install pymongo -U
@@ -661,7 +661,7 @@ function install_elastic() {
     # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-elasticsearch-on-ubuntu-20-04
     curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
     echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
-    apt update && apt install elasticsearch
+    yum makecache && apt install elasticsearch
     pip3 install elasticsearch
     systemctl enable elasticsearch
 }
@@ -672,7 +672,7 @@ function install_postgresql() {
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
 
-    sudo apt update -y
+    sudo yum makecache
     sudo apt -y install libpq-dev postgresql postgresql-client
 
     # amazing tool for monitoring https://github.com/dalibo/pg_activity
@@ -756,7 +756,7 @@ function dependencies() {
     #gpg2 --recv A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89
     #gpg2 --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add -
     wget -qO - https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | sudo apt-key add -
-    sudo apt update 2>/dev/null
+    sudo yum makecache 2>/dev/null
     apt install tor deb.torproject.org-keyring libzstd1 -y
 
     sed -i 's/#RunAsDaemon 1/RunAsDaemon 1/g' /etc/tor/torrc
